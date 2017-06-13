@@ -6,18 +6,18 @@ document.addEventListener("DOMContentLoaded", function() {
         pos: {x: 0, y: 0},
         pos_prev: false
     };
-    // get canvas element and create context
+
     var canvas = document.getElementById('drawing');
     var context = canvas.getContext('2d');
-    var width = window.innerWidth;
-    var height = window.innerHeight;
+    var width = 800;
+    var height = 600;
+    canvas.width = width;
+    canvas.height = height;
     socket = io.connect();
 
-    // set canvas to full browser width/height
     canvas.width = width;
     canvas.height = height;
 
-    // register mouse event handlers
     canvas.onmousedown = function (e) {
         mouse.click = true;
     };
@@ -26,13 +26,13 @@ document.addEventListener("DOMContentLoaded", function() {
     };
 
     canvas.onmousemove = function (e) {
-        // normalize mouse position to range 0.0 - 1.0
-        mouse.pos.x = e.clientX / width;
-        mouse.pos.y = e.clientY / height;
+        // normalize
+        var rect = canvas.getBoundingClientRect();
+        mouse.pos.x = (e.clientX - rect.left)/ width;
+        mouse.pos.y = (e.clientY - rect.top)/ height;
         mouse.move = true;
     };
 
-    // draw line received from server
     socket.on('draw_line', function (data) {
         var line = data.line;
         context.beginPath();
@@ -40,17 +40,15 @@ document.addEventListener("DOMContentLoaded", function() {
         context.lineTo(line[1].x * width, line[1].y * height);
         context.strokeStyle = "green";
         context.stroke();
+        console.log([line[0].x * width, line[0].y * height,line[1].x * width, line[1].y * height]);
     });
 
     socket.on('clear', function () {
         context.clearRect(0, 0, canvas.width, canvas.height);
     });
 
-   // main loop, running every 25ms
    function mainLoop() {
-      // check if the user is drawing
       if (mouse.click && mouse.move && mouse.pos_prev) {
-         // send line to to the server
          socket.emit('draw_line', { line: [ mouse.pos, mouse.pos_prev ] });
          mouse.move = false;
       }
@@ -62,6 +60,5 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function click_clear()
 {
-    alert("bilibili");
     socket.emit('clear');
 }
