@@ -1,5 +1,26 @@
 var socket = null;
+var my_id = null;
+navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
+var media_stream = null;
+var id_poll = [];
+var connection_poll = [];
+var peer =  null;
+var connected = false;
+
 document.addEventListener("DOMContentLoaded", function() {
+    peer = new Peer({key: 'h0o3qr6xbq1o47vi'});
+    peer.on('open',function(id){
+        socket.emit('new_id',id);
+        console.log('My peer ID is: ' + id);
+        my_id = id;
+    });
+    peer.on('call',function(call){
+        call.on('stream',function(stream){
+            play_stream(stream);
+        });
+        call.answer(null);
+    });
+
     var mouse = {
         click: false,
         move: false,
@@ -40,11 +61,16 @@ document.addEventListener("DOMContentLoaded", function() {
         context.lineTo(line[1].x * width, line[1].y * height);
         context.strokeStyle = "green";
         context.stroke();
-        console.log([line[0].x * width, line[0].y * height,line[1].x * width, line[1].y * height]);
+        //console.log([line[0].x * width, line[0].y * height,line[1].x * width, line[1].y * height]);
     });
 
     socket.on('clear', function () {
         context.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    socket.on('refresh_id_poll',function (poll) {
+        id_poll = poll;
+        console.log(id_poll);
     });
 
    function mainLoop() {
@@ -58,7 +84,55 @@ document.addEventListener("DOMContentLoaded", function() {
    mainLoop();
 });
 
-function click_clear()
-{
+function click_clear() {
     socket.emit('clear');
 }
+
+function open_connection() {
+    get_media_stream();
+    if(media_stream == null)
+        return;
+    for(var i = 0;i < id_poll.length;i++)
+    {
+        var dest_id = id_poll[i];
+        if(dest_id == my_id)
+            continue;
+        connection_poll.push(peer.call(dest_id,media_stream));
+    }
+    connected = true;
+    console.log(connection_poll);
+}
+
+function get_media_stream() {
+    navigator.getUserMedia (
+        {video: false, audio: true},
+        function success(audioStream) {
+            media_stream = audioStream;
+        },
+
+        function error(err) {
+            alert("Can not get your microphone!");
+        }
+    );
+}
+
+function play_stream(stream) {
+    var audio = $('<audio autoplay />').appendTo('body');
+    audio[0].src = (URL || webkitURL || mozURL).createObjectURL(stream);
+}
+
+window.onunload = function(){
+    socket.emit('remove',my_id);
+}
+
+function close_connection()
+{
+    console.log('trying disconnect');
+    if(!connected)
+        return;
+    for(var i = 0;i < connection_poll.length;i++)
+        connection_poll[i].close();
+    connection_poll = [];
+    connected = false;
+}
+

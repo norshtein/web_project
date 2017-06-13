@@ -6,6 +6,7 @@
    <meta name="viewport" content="width=device-width, initial-scale=1">
    <title>Answer your question</title>
 
+   <script src="http://cdn.peerjs.com/0.3/peer.min.js"></script>
    <script src="socket.io/socket.io.js"></script>
    <script src="js/client.js"></script>
    <link href ="css/style.css" rel="stylesheet">
@@ -32,7 +33,9 @@
       <h1 class="center-block">Answer Your Question</h1>
    </div>
    <div>
-      <button onclick="click_clear()" class ="btn btn-danger">Clear</button>
+      <button onclick="click_clear()" class ="btn btn-danger">Clear Image</button>
+      <button onclick="open_connection()" class ="btn btn-success">Chat</button>
+      <button onclick="close_connection()" class ="btn btn-warning">Quit Chat</button>
    </div>
    <hr>
 
@@ -50,5 +53,4 @@
 </body>
 
 
-<script src="js/index.js"></script>
 </html>

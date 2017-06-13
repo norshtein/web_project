@@ -1,7 +1,7 @@
 {
-   "name": "MiniDoodle",
-   "description": "Collaborative drawing canvas",
-   "author": "Code-and.Coffee",
+   "name": "AnswerYourQuestion",
+   "description": "Collaborative drawing",
+   "author": "sty",
    "dependencies" : {
       "express": "4.x",
       "socket.io": "*"
