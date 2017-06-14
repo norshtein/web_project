@@ -36,6 +36,10 @@
       <button onclick="click_clear()" class ="btn btn-danger">Clear Image</button>
       <button onclick="open_connection()" class ="btn btn-success">Chat</button>
       <button onclick="close_connection()" class ="btn btn-warning">Quit Chat</button>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <button onclick="mute()" class="btn btn-default">Close Voice</button>
+      <button onclick="unmute()" class="btn btn-default">Open Voice</button>
+
    </div>
    <hr>
 
@@ -52,5 +56,12 @@
 </footer>
 </body>
 
+<script>
+   setTimeout(function () {
+       if(document.getElementById('drawing').width != 800)
+           alert('Please enable executing unsafe scripts!');
+   },3000);
+
+</script>
 
 </html>

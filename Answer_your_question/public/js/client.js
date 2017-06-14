@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
         my_id = id;
     });
     peer.on('call',function(call){
+        console.log('receive request');
         call.on('stream',function(stream){
             play_stream(stream);
         });
@@ -125,8 +126,7 @@ window.onunload = function(){
     socket.emit('remove',my_id);
 }
 
-function close_connection()
-{
+function close_connection() {
     console.log('trying disconnect');
     if(!connected)
         return;
@@ -136,3 +136,14 @@ function close_connection()
     connected = false;
 }
 
+function mute() {
+    $("audio").each(function(i){
+        this.muted = true;
+    });
+}
+
+function unmute() {
+    $("audio").each(function(i){
+        this.muted = false;
+    });
+}
